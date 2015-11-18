@@ -22,7 +22,6 @@ public class FindPaths {
 		System.out.println("Edges are " + e);
 		System.out.println("There are " + e.size() + " edges.");
 		while(true) {
-			/*
 			System.out.print("Start vertex? ");
 			Vertex a = new Vertex(console.nextLine());
 			if(!v.contains(a)) {
@@ -36,53 +35,18 @@ public class FindPaths {
 				System.out.println("no such vertex");
 				System.exit(1);
 			}
-
-			// YOUR CODE HERE: call shortestPath and print
-			// out the result
-
-			//Used to test adjacentVertices and edgeCost
-			
-			System.out.print("Adjacent vertices to a vertex? ");
-			Vertex c = new Vertex(console.nextLine());
-			if(!v.contains(c)) {
-				System.out.println("no such vertex");
-				System.exit(1);
-			} else {
-				System.out.println("Adjacent vertices are: " + g.adjacentVertices(c));
-			}
-
-			System.out.println("Check cost of edge. ");
-			System.out.print("Start of edge: ");
-			Vertex d = new Vertex(console.nextLine());
-			System.out.print("End of edge: ");
-			Vertex f = new Vertex(console.nextLine());
-			if(!v.contains(d)) {
-				System.out.println("no such vertex");
-				System.exit(1);
-			} else {
-				System.out.println("Cost of edge is: " + g.edgeCost(d, f));
-			}
-			*/
-			System.out.println("Lets find the shortest path...");
-			System.out.print("Start of path: ");
-			Vertex a = new Vertex(console.nextLine());
-			if(!v.contains(a)) {
-				System.out.println("no such vertex");
-				System.exit(0);
-			}
-			System.out.print("End of path: ");
-			Vertex b = new Vertex(console.nextLine());
-			if(!v.contains(b)) {
-				System.out.println("no such vertex");
-				System.exit(0);
-			}
-
+			// Format requested for output in spec
+			System.out.print("Shortest path from " + a + " to " + b + ": ");
 			Path aToB = g.shortestPath(a, b);
-			System.out.println();
-			System.out.println("Shortest path is: " + aToB.vertices);
-			System.out.println("Cost is: " + aToB.cost);
-			System.out.println();
-
+			if (aToB != null) {
+				for (int i = 0; i < aToB.vertices.size(); i++) {
+					System.out.print(aToB.vertices.get(i) + " ");
+				}
+				System.out.println();
+				System.out.println(aToB.cost);
+			} else {
+				System.out.println("line does not exist");
+			}
 		}
 	}
 

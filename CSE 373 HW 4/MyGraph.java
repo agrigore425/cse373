@@ -139,85 +139,90 @@ public class MyGraph implements Graph {
      * @throws IllegalArgumentException if a or b does not exist.
      */
     public Path shortestPath(Vertex a, Vertex b) {
+        // If a or b aren't present in the set of vertices throw an exception
         if (!myGraph.containsKey(b) || !myGraph.containsKey(a)) {
-            throw new IllegalArgumentException("Edge weight is negative");
+            throw new IllegalArgumentException("One of the vertices isn't valid");
         }
-      
+        /* Create a map of Vertices to VertexInfos. Fill it with VertexInfos for all
+           vertices that have no previous vertex and and a cost of INFINITY */
         Map<Vertex, VertexInfo> vertInfos = new HashMap<Vertex, VertexInfo>();
         for (Vertex v : vertices()) {
             vertInfos.put(v, new VertexInfo(v, null, INFINITY));
         }
-      
+        /* Create a PriorityQueue for VertexInfos */
         PriorityQueue<VertexInfo> viQueue = new PriorityQueue<VertexInfo>();
+        /* Create a VertexInfo for the start Vertex 'a' with a cost of 0 */
         VertexInfo vi_a = new VertexInfo(a, null, 0);
+        /* Add VerxtexInfo for a to PQ and map it to it's VertexInfo */
         viQueue.add(vi_a);
         vertInfos.put(a, vi_a);
-  
         while(!viQueue.isEmpty()) {
+            /* Remove the VertexInfo with lowest cost */
             Vertex curr = viQueue.poll().getVertex();
-
+            /* Check all adjacent Vertices of curr Vertex */
             for (Vertex v : adjacentVertices(curr)) {
-                int edgeWeight = edgeCost(curr, v);
-                int cost = vertInfos.get(curr).getCost() + edgeWeight;
-
+                /* Calculate cost to get to v through curr */
+                int cost = vertInfos.get(curr).getCost() + edgeCost(curr, v);
+                /* If cost through curr is lower than previous */
                 if (cost < vertInfos.get(v).getCost()) {
+                    /* Remove v's VertexInfo from PQ */
                     viQueue.remove(vertInfos.get(v));
-
-                    vertInfos.get(v).changeCost(cost);
-                    vertInfos.get(v).changePrev(curr);
+                    /* Overwrite previous value of v in map
+                       Add updated VerexInfo to PQ */
                     VertexInfo vi = new VertexInfo(v, curr, cost);
                     vertInfos.put(v,vi);
-
-                    viQueue.add(vertInfos.get(v));
+                    viQueue.add(vi);
                 }
             }
         }
-
-         List<Vertex> path = new ArrayList<Vertex>();
-      
+        /* Create ArrayList for path */
+        List<Vertex> path = new ArrayList<Vertex>();
+        
+        /* Add each vertex and it's previous vertex to path until a null vertex is reached */
         for (Vertex vert = b; vert != null; vert = vertInfos.get(vert).getPrev()) {
             path.add(vert);
         }
 
+        /* Reverse order of path */ 
         Collections.reverse(path);
-
+        /* Create new Path object with corresponding parameters */
         Path pathToB = new Path(path, vertInfos.get(b).getCost());
         return pathToB;
     }
 
+    /* Class used to compare  Vertices in shortestPath which implements comparable */
     public class VertexInfo implements Comparable<VertexInfo> {
+        /* Class contains current vertex it's previous vertex and a cost */
         private Vertex curr;
         private Vertex prev;
         private int cost;
 
+        /* Constructor for VertexInfos */
         public VertexInfo(Vertex curr, Vertex prev, int cost) {
             this.curr = curr;
             this.prev = prev;
             this.cost = cost;
         }
 
+        /* Comparing between two VertexInfos is done by computing the differnce
+           in their costs*/
         public int compareTo(VertexInfo other) {
             return this.cost - other.getCost();
         }
 
+        /* Returns current vertex */
         public Vertex getVertex() {
             return curr;
         }
 
+        /* Returns previous vertex */
         public Vertex getPrev() {
             return prev;
         }
 
-        public void changePrev(Vertex newPrev) {
-            prev = newPrev;
-        }
-
+        /* Returns cost of vertex */
         public int getCost() {
             return cost;
-        }
-
-        public void changeCost(int newCost) {
-            cost = newCost;
         }
     }
 }
