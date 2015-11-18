@@ -1,0 +1,13 @@
+CSE 373 HW 4
+Rigo Orozco Diaz
+rigodiaz
+Anthony Grigore
+agrigore
+
+To run code in terminal:
+1. Go to correct directory:
+	cd CSE373/CSE\ 373\ HW\ 4
+2. Compile FindPaths
+	javac FindPaths.java
+3. Run FindPaths
+	java FindPaths vertex.txt edge.txt
