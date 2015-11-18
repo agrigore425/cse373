@@ -8,6 +8,7 @@ public class MyGraph implements Graph {
     // you will need some private fields to represent the graph
     // you are also likely to want some private helper methods
     // YOUR CODE HERE
+    private static final Integer INFINITY = Integer.MAX_VALUE;
     private Map<Vertex, Collection<Edge>> myGraph;
     /**
      * Creates a MyGraph object with the given collection of vertices
@@ -15,51 +16,56 @@ public class MyGraph implements Graph {
      * @param v a collection of the vertices in this graph
      * @param e a collection of the edges in this graph
      */
-    
     public MyGraph(Collection<Vertex> v, Collection<Edge> e) {
-      myGraph = new HashMap<Vertex, Collection<Edge>>();
+        myGraph = new HashMap<Vertex, Collection<Edge>>();
       
-      Iterator<Vertex> vertices = v.iterator();
-      while(vertices.hasNext()) {
-         Vertex currV = vertices.next();
-         if(!myGraph.containsKey(currV)){
-            myGraph.put(currV, new ArrayList<Edge>());
-         }
-      }
-
-      Iterator<Edge> edges = e.iterator();
-      while(edges.hasNext()){
-         Edge currE = edges.next();
-         if(currE.getWeight() < 0){
-            throw new IllegalArgumentException("Edge weight is negative");
-         }
-         Vertex currESrc = currE.getSource();
-         Vertex currEDest = currE.getDestination();
-         if(v.contains(currESrc) && v.contains(currEDest)){
-            if(!myGraph.containsKey(currESrc)) {
-               throw new IllegalArgumentException("Vertex in edge is not valid");
-            } else {
-               Collection<Edge> outEdges = myGraph.get(currESrc);
-               if(!outEdges.contains(currE)){
-                  Iterator<Edge> storedE = outEdges.iterator();
-                  while(storedE.hasNext()){
-                     Edge edgeVal = storedE.next();
-                     if(!currE.equals(edgeVal)){
-                        outEdges.add(currE);
-                     }
-                  }
-               }
+        Iterator<Vertex> vertices = v.iterator();
+        while(vertices.hasNext()) {
+            Vertex currV = vertices.next();
+            if(!myGraph.containsKey(currV)){
+                myGraph.put(currV, new ArrayList<Edge>());
             }
-         }
-      }
+        }
+
+        Iterator<Edge> edges = e.iterator();
+        while(edges.hasNext()){
+            Edge currE = edges.next();
+            if(currE.getWeight() < 0){
+                throw new IllegalArgumentException("Edge weight is negative");
+            }
+            Vertex currESrc = currE.getSource();
+            Vertex currEDest = currE.getDestination();
+            if(v.contains(currESrc) && v.contains(currEDest)){
+                if(!myGraph.containsKey(currESrc)) {
+                    throw new IllegalArgumentException("Vertex in edge is not valid");
+                } else {
+                Collection<Edge> outEdges = myGraph.get(currESrc);
+                //System.out.println("The Source Vertex is " + currESrc.toString());
+
+                    if(!outEdges.contains(currE)){
+                        outEdges.add(currE);
+                        //Debugging-print each outgoing edge of the given source node
+                        /*Iterator<Edge> storedE = outEdges.iterator();
+                        System.out.print("The stored edges at " + currESrc.toString() + " are: ");
+                        while(storedE.hasNext()){
+                            Edge edgeVal = storedE.next();
+
+                            System.out.print(edgeVal.toString() + ", ");
+                        }
+                        System.out.println();*/
+                    }
+                }
+            }
+        }
     }
 
     /** 
      * Return the collection of vertices of this graph
      * @return the vertices as a collection (which is anything iterable)
      */
+    // WORKS
     public Collection<Vertex> vertices() {      
-      return myGraph.keySet();
+        return myGraph.keySet();
     }
 
     /** 
@@ -67,15 +73,15 @@ public class MyGraph implements Graph {
      * @return the edges as a collection (which is anything iterable)
      */
     public Collection<Edge> edges() {
-      Collection<Collection<Edge>> values = new ArrayList<Collection<Edge>>();
-      values = myGraph.values();
-      Collection<Edge> allValues = new ArrayList<Edge>();
-      Iterator<Collection<Edge>> eachColl = values.iterator();
-      while(eachColl.hasNext()){
-        allValues.addAll(eachColl.next());
-      }
+        Collection<Collection<Edge>> values = new ArrayList<Collection<Edge>>();
+        values = myGraph.values();
+        Collection<Edge> allValues = new ArrayList<Edge>();
+        Iterator<Collection<Edge>> eachColl = values.iterator();
+        while(eachColl.hasNext()){
+            allValues.addAll(eachColl.next());
+        }
 
-      return allValues;
+        return allValues;
     }
 
     /**
@@ -87,12 +93,12 @@ public class MyGraph implements Graph {
      * @throws IllegalArgumentException if v does not exist.
      */
     public Collection<Vertex> adjacentVertices(Vertex v) {
-      Collection<Vertex> adjVertices = new ArrayList<Vertex>();
-      Iterator<Edge> edges = myGraph.get(v).iterator();
-      while(edges.hasNext()) {
-        adjVertices.add(edges.next().getDestination());
-      }
-      return adjVertices;
+        Collection<Vertex> adjVertices = new ArrayList<Vertex>();
+        Iterator<Edge> edges = myGraph.get(v).iterator();
+        while(edges.hasNext()) {
+            adjVertices.add(edges.next().getDestination());
+        }
+        return adjVertices;
     }
 
     /**
@@ -105,21 +111,20 @@ public class MyGraph implements Graph {
      * @throws IllegalArgumentException if a or b do not exist.
      */
     public int edgeCost(Vertex a, Vertex b) {
-      if (!myGraph.containsKey(b) || !myGraph.containsKey(a)) {
-        throw new IllegalArgumentException("Edge weight is negative");
-      }
-      Collection<Vertex> adjVerticesA = adjacentVertices(a);
-      int cost = -1;
-      if (adjVerticesA.contains(b)) {
-        Iterator<Edge> edges = myGraph.get(a).iterator();
-        while(edges.hasNext()){
-          Edge currEdge = edges.next();
-          if(currEdge.getDestination().equals(b)) {
-            cost =  currEdge.getWeight();
-          }
+        if (!myGraph.containsKey(b) || !myGraph.containsKey(a)) {
+            throw new IllegalArgumentException("Edge weight is negative");
         }
-      }
-      return cost;
+        int cost = -1;
+        if (adjacentVertices(a).contains(b)) {
+            Iterator<Edge> edges = myGraph.get(a).iterator();
+            while(edges.hasNext()){
+                Edge currEdge = edges.next();
+                if(currEdge.getDestination().equals(b)) {
+                    cost =  currEdge.getWeight();
+                }
+            }
+        }
+        return cost;
     }
 
     /**
@@ -134,9 +139,85 @@ public class MyGraph implements Graph {
      * @throws IllegalArgumentException if a or b does not exist.
      */
     public Path shortestPath(Vertex a, Vertex b) {
+        if (!myGraph.containsKey(b) || !myGraph.containsKey(a)) {
+            throw new IllegalArgumentException("Edge weight is negative");
+        }
+      
+        Map<Vertex, VertexInfo> vertInfos = new HashMap<Vertex, VertexInfo>();
+        for (Vertex v : vertices()) {
+            vertInfos.put(v, new VertexInfo(v, null, INFINITY));
+        }
+      
+        PriorityQueue<VertexInfo> viQueue = new PriorityQueue<VertexInfo>();
+        VertexInfo vi_a = new VertexInfo(a, null, 0);
+        viQueue.add(vi_a);
+        vertInfos.put(a, vi_a);
+  
+        while(!viQueue.isEmpty()) {
+            Vertex curr = viQueue.poll().getVertex();
 
-	// YOUR CODE HERE (you might comment this out this method while doing Part 1)
-      return null;
+            for (Vertex v : adjacentVertices(curr)) {
+                int edgeWeight = edgeCost(curr, v);
+                int cost = vertInfos.get(curr).getCost() + edgeWeight;
+
+                if (cost < vertInfos.get(v).getCost()) {
+                    viQueue.remove(vertInfos.get(v));
+
+                    vertInfos.get(v).changeCost(cost);
+                    vertInfos.get(v).changePrev(curr);
+                    VertexInfo vi = new VertexInfo(v, curr, cost);
+                    vertInfos.put(v,vi);
+
+                    viQueue.add(vertInfos.get(v));
+                }
+            }
+        }
+
+         List<Vertex> path = new ArrayList<Vertex>();
+      
+        for (Vertex vert = b; vert != null; vert = vertInfos.get(vert).getPrev()) {
+            path.add(vert);
+        }
+
+        Collections.reverse(path);
+
+        Path pathToB = new Path(path, vertInfos.get(b).getCost());
+        return pathToB;
     }
 
+    public class VertexInfo implements Comparable<VertexInfo> {
+        private Vertex curr;
+        private Vertex prev;
+        private int cost;
+
+        public VertexInfo(Vertex curr, Vertex prev, int cost) {
+            this.curr = curr;
+            this.prev = prev;
+            this.cost = cost;
+        }
+
+        public int compareTo(VertexInfo other) {
+            return this.cost - other.getCost();
+        }
+
+        public Vertex getVertex() {
+            return curr;
+        }
+
+        public Vertex getPrev() {
+            return prev;
+        }
+
+        public void changePrev(Vertex newPrev) {
+            prev = newPrev;
+        }
+
+        public int getCost() {
+            return cost;
+        }
+
+        public void changeCost(int newCost) {
+            cost = newCost;
+        }
+    }
 }

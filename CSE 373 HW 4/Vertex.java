@@ -53,6 +53,4 @@ public class Vertex {
 		    return label.equals(other.label);
 		}
 	}
-
-
 }

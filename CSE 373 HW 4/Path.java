@@ -8,7 +8,7 @@ public class Path {
     public final int cost;
     
     public Path(List<Vertex> vertices, int cost) {
-	this.vertices = vertices;
-	this.cost = cost;
+		this.vertices = vertices;
+		this.cost = cost;
     }
 }
