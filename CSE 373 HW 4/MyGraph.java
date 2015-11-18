@@ -144,7 +144,7 @@ public class MyGraph implements Graph {
             throw new IllegalArgumentException("One of the vertices isn't valid");
         }
         /* Create a map of Vertices to VertexInfos. Fill it with VertexInfos for all
-           vertices that have no previous vertex and and a cost of INFINITY */
+           vertices that each have no previous vertex and and a cost of INFINITY */
         Map<Vertex, VertexInfo> vertInfos = new HashMap<Vertex, VertexInfo>();
         for (Vertex v : vertices()) {
             vertInfos.put(v, new VertexInfo(v, null, INFINITY));
