@@ -7,6 +7,9 @@ import java.io.*;
  */
 
 public class FindPaths {
+
+   private static final Integer INFINITY = Integer.MAX_VALUE;
+
 	public static void main(String[] args) {
 		if(args.length != 2) {
 			System.err.println("USAGE: java Paths <vertex_file> <edge_file>");
@@ -36,16 +39,16 @@ public class FindPaths {
 				System.exit(1);
 			}
 			// Format requested for output in spec
-			System.out.print("Shortest path from " + a + " to " + b + ": ");
+			System.out.println("Shortest path from " + a + " to " + b + ": ");
 			Path aToB = g.shortestPath(a, b);
-			if (aToB != null) {
+			if (aToB != null && aToB.cost != INFINITY) {
 				for (int i = 0; i < aToB.vertices.size(); i++) {
 					System.out.print(aToB.vertices.get(i) + " ");
 				}
 				System.out.println();
 				System.out.println(aToB.cost);
 			} else {
-				System.out.println("line does not exist");
+				System.out.println("does not exist");
 			}
 		}
 	}

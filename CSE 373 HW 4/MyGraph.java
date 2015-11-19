@@ -36,25 +36,12 @@ public class MyGraph implements Graph {
             Vertex currESrc = currE.getSource();
             Vertex currEDest = currE.getDestination();
             if(v.contains(currESrc) && v.contains(currEDest)){
-                if(!myGraph.containsKey(currESrc)) {
-                    throw new IllegalArgumentException("Vertex in edge is not valid");
-                } else {
                 Collection<Edge> outEdges = myGraph.get(currESrc);
-                //System.out.println("The Source Vertex is " + currESrc.toString());
-
-                    if(!outEdges.contains(currE)){
-                        outEdges.add(currE);
-                        //Debugging-print each outgoing edge of the given source node
-                        /*Iterator<Edge> storedE = outEdges.iterator();
-                        System.out.print("The stored edges at " + currESrc.toString() + " are: ");
-                        while(storedE.hasNext()){
-                            Edge edgeVal = storedE.next();
-
-                            System.out.print(edgeVal.toString() + ", ");
-                        }
-                        System.out.println();*/
-                    }
+                if(!outEdges.contains(currE)){
+                  outEdges.add(currE);
                 }
+            } else {
+               throw new IllegalArgumentException("Vertex in edge is not valid");
             }
         }
     }
@@ -186,8 +173,12 @@ public class MyGraph implements Graph {
         /* Reverse order of path */ 
         Collections.reverse(path);
         /* Create new Path object with corresponding parameters */
-        Path pathToB = new Path(path, vertInfos.get(b).getCost());
-        return pathToB;
+        if(path.contains(a)){
+            Path pathToB = new Path(path, vertInfos.get(b).getCost());
+            return pathToB;
+        } else {
+            return null;
+        }
     }
 
     /* Class used to compare  Vertices in shortestPath which implements comparable */
