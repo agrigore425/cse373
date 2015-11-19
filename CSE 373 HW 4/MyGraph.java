@@ -18,18 +18,26 @@ public class MyGraph implements Graph {
      */
     public MyGraph(Collection<Vertex> v, Collection<Edge> e) {
         myGraph = new HashMap<Vertex, Collection<Edge>>();
-      
+        
         Iterator<Vertex> vertices = v.iterator();
         while(vertices.hasNext()) {
-            Vertex currV = vertices.next();
+            //create a new vertex copy of each passes in vertex in Collection v to restrict any reference
+            //to the internals of this class
+            Vertex currV = new Vertex(vertices.next().getLabel()); //NEW
+            //Vertex currV = vertices.next(); OLD
             if(!myGraph.containsKey(currV)){
+                //add the copy of the vertex into the HashMap
                 myGraph.put(currV, new ArrayList<Edge>());
             }
         }
 
         Iterator<Edge> edges = e.iterator();
         while(edges.hasNext()){
-            Edge currE = edges.next();
+            //copies a new edge for each edge in Collection e to restrict any reference 
+            //to the internals of this class
+            Edge parameterEdge = edges.next();
+            Edge currE = new Edge(parameterEdge.getSource(), parameterEdge.getDestination(), parameterEdge.getWeight()); //NEW
+            //Edge currE = edges.next();  OLD
             if(currE.getWeight() < 0){
                 throw new IllegalArgumentException("Edge weight is negative");
             }
@@ -38,7 +46,8 @@ public class MyGraph implements Graph {
             if(v.contains(currESrc) && v.contains(currEDest)){
                 Collection<Edge> outEdges = myGraph.get(currESrc);
                 if(!outEdges.contains(currE)){
-                  outEdges.add(currE);
+                    //add the copy of the edge as a value in the HashMap
+                    outEdges.add(currE);
                 }
             } else {
                throw new IllegalArgumentException("Vertex in edge is not valid");
@@ -52,7 +61,12 @@ public class MyGraph implements Graph {
      */
     // WORKS
     public Collection<Vertex> vertices() {      
-        return myGraph.keySet();
+        //return myGraph.keySet(); OLD
+        //create a copy of all the vertices in the map to restrict any reference
+        //to the interals of this class
+        Collection<Vertex> copyOfVertices = new ArrayList<Vertex>();
+        copyOfVertices.addAll(myGraph.keySet());
+        return copyOfVertices;
     }
 
     /** 
@@ -60,10 +74,13 @@ public class MyGraph implements Graph {
      * @return the edges as a collection (which is anything iterable)
      */
     public Collection<Edge> edges() {
-        Collection<Collection<Edge>> values = new ArrayList<Collection<Edge>>();
-        values = myGraph.values();
+        Collection<Collection<Edge>> copyOfEdges = new ArrayList<Collection<Edge>>();
+        //values = myGraph.values(); OLD
+        //create a copy of all the edges in the map to restrict any reference
+        //to interals of this class
+        copyOfEdges.addAll(myGraph.values());
         Collection<Edge> allValues = new ArrayList<Edge>();
-        Iterator<Collection<Edge>> eachColl = values.iterator();
+        Iterator<Collection<Edge>> eachColl = copyOfEdges.iterator();
         while(eachColl.hasNext()){
             allValues.addAll(eachColl.next());
         }
@@ -80,8 +97,16 @@ public class MyGraph implements Graph {
      * @throws IllegalArgumentException if v does not exist.
      */
     public Collection<Vertex> adjacentVertices(Vertex v) {
+        Vertex parameterVertex = new Vertex(v.getLabel());
+        if(!myGraph.containsKey(parameterVertex)){
+            throw new IllegalArgumentException("Vertex is not valid");
+        }
+
+        //create a copy of the passed in vertex to restrict any reference
+        //to interals of this class
         Collection<Vertex> adjVertices = new ArrayList<Vertex>();
-        Iterator<Edge> edges = myGraph.get(v).iterator();
+
+        Iterator<Edge> edges = myGraph.get(parameterVertex).iterator();
         while(edges.hasNext()) {
             adjVertices.add(edges.next().getDestination());
         }
@@ -99,11 +124,16 @@ public class MyGraph implements Graph {
      */
     public int edgeCost(Vertex a, Vertex b) {
         if (!myGraph.containsKey(b) || !myGraph.containsKey(a)) {
-            throw new IllegalArgumentException("Edge weight is negative");
+            throw new IllegalArgumentException("Vertex is not valid");
         }
         int cost = -1;
         if (adjacentVertices(a).contains(b)) {
-            Iterator<Edge> edges = myGraph.get(a).iterator();
+            //create a copy of all the edges at the passed in Vertex a
+            //to restrict any reference to interals of this class
+            Collection<Edge> copyOfEdges = new ArrayList<Edge>();
+            copyOfEdges.addAll(myGraph.get(a));
+
+            Iterator<Edge> edges = copyOfEdges.iterator();
             while(edges.hasNext()){
                 Edge currEdge = edges.next();
                 if(currEdge.getDestination().equals(b)) {
@@ -138,8 +168,11 @@ public class MyGraph implements Graph {
         }
         /* Create a PriorityQueue for VertexInfos */
         PriorityQueue<VertexInfo> viQueue = new PriorityQueue<VertexInfo>();
-        /* Create a VertexInfo for the start Vertex 'a' with a cost of 0 */
-        VertexInfo vi_a = new VertexInfo(a, null, 0);
+        /* Create a VertexInfo for the start Vertex 'a' with a cost of 0. This uses a copy of Vertex a&b for immutability */
+        Vertex copyA = new Vertex(a.getLabel());
+        Vertex copyB = new Vertex(b.getLabel());
+
+        VertexInfo vi_a = new VertexInfo(copyA, null, 0);
         /* Add VerxtexInfo for a to PQ and map it to it's VertexInfo */
         viQueue.add(vi_a);
         vertInfos.put(a, vi_a);
@@ -166,15 +199,15 @@ public class MyGraph implements Graph {
         List<Vertex> path = new ArrayList<Vertex>();
         
         /* Add each vertex and it's previous vertex to path until a null vertex is reached */
-        for (Vertex vert = b; vert != null; vert = vertInfos.get(vert).getPrev()) {
+        for (Vertex vert = copyB; vert != null; vert = vertInfos.get(vert).getPrev()) {
             path.add(vert);
         }
 
         /* Reverse order of path */ 
         Collections.reverse(path);
         /* Create new Path object with corresponding parameters */
-        if(path.contains(a)){
-            Path pathToB = new Path(path, vertInfos.get(b).getCost());
+        if(path.contains(copyA)){
+            Path pathToB = new Path(path, vertInfos.get(copyB).getCost());
             return pathToB;
         } else {
             return null;
