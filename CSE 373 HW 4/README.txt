@@ -22,5 +22,7 @@ rigodiaz 1228362
     
 5) If you did any above-and-beyond, describe what you did.
 
+We chose to use a priority queue in our implementation to calculate the shortest path. Using this allowed us to reduce the runtime of picking the next vertex to visit. Using a priority queue to find the vertex with the smallest weight rather than comparing every value each time reduced the runtime to O(1) from O(V).
+
 
 
